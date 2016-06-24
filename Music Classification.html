@@ -5598,7 +5598,7 @@ Later on we will implement the multinomial model of the classifier and use word 
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Fitting-the-problem-with-Bayesian-Probability">Fitting the problem with Bayesian Probability<a class="anchor-link" href="#Fitting-the-problem-with-Bayesian-Probability">&#182;</a></h3><p>Assuming that F<sub>1</sub> and F<sub>2</sub> are independent:</p>
+<h3 id="1.-Fitting-the-problem-with-Bayesian-Probability">1. Fitting the problem with Bayesian Probability<a class="anchor-link" href="#1.-Fitting-the-problem-with-Bayesian-Probability">&#182;</a></h3><p>Assuming that F<sub>1</sub> and F<sub>2</sub> are independent:</p>
 $$P\left (C|F_1,F_2 \right) = \frac {P\left(C\right) \cdot P\left(F_1|C\right) \cdot P\left(F_2|C\right)}{P\left(F_1,F_2 \right)}$$<p>For instance, to calculate the probability of a theme being either "blues" style or "classical", considering exclusively samples from those two styles:</p>
 $$P\left (C="blues"|F_1,F_2 \right) = \frac {P\left(C="blues"\right) \cdot P\left(F_1|C="blues"\right) \cdot P\left(F_2|C="blues"\right)}{P\left(F_1,F_2 \right)}$$$$P\left (C="classical"|F_1,F_2 \right) = \frac {P\left(C="classical"\right) \cdot P\left(F_1|C="classical"\right) \cdot P\left(F_2|C="classical"\right)}{P\left(F_1,F_2 \right)}$$<p>We are interested on calculating the <i>argmax</i> of all <i>blues</i> and <i>classical</i> classes of <i>C</i> and keep only the class with the highest <i>P</i> value. We denote that class as <i>c<sub>best</sub></i>, more specifically:</p>
 $$
@@ -5648,18 +5648,45 @@ $$P\left (C="blues"|F_1,F_2 \right) = \frac {P\left(C="blues"\right) \cdot P\lef
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre> 
-</pre></div>
-
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="2.-Laplace-Smoothing">2. Laplace Smoothing<a class="anchor-link" href="#2.-Laplace-Smoothing">&#182;</a></h3><p>Laplace or additive smoothing are used to adjust the probabilities. We asume that all the possible class values may occur at least once, even if we are not able to find them within our particular sample. This is a more realistic approach.</p>
+<p>For this reason, we add 1 to all the occurrences and compensate this increment also adding the number of extra samples added to the denominator of the expressions. For instance if:</p>
+$$
+P\left(F_1=1|C="classical"\right) = \frac{15}{100} \; \text{ and } P\left(F_1=1|C="blues"\right) = \frac{80}{100}
+$$<p>Then we will smooth it by adding one to each numerator and two to each denominator (because we only add 2 occurrences on the numerators):</p>
+$$
+P\left(F_1=1|C="classical"\right) = \frac{15+1}{100+2} = \frac{16}{102} 
+\; \text{ and } 
+P\left(F_1=1|C="blues"\right) = \frac{80+1}{100+2} = \frac{81}{102}
+$$
 </div>
 </div>
 </div>
-
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="3.-Tackling-Extreme-Values">3. Tackling Extreme Values<a class="anchor-link" href="#3.-Tackling-Extreme-Values">&#182;</a></h3><p>Another important issue treated on the book Building Machine Learning Systems With Python is the extreme value mitigation with logarithmic transformations.</p>
+<p>In few words, what it is achieved through logarithmic transformation is to change the scale so that each units corresponds to 10 times the previous unit (for base-10 logarithms). We can apply the logarithm property <i>AXB=LOG(A)+LOG(B)</i> to transform our bayesian equations:</p>
+$$
+c_{best} = argmax_{c \in C}\; P\left(C=c\right)\cdot
+P\left(F_1 |C = c\right) \cdot
+P\left(F_2 |C = c\right)
+\;
+\text{ becomes for any n variables } \\
+c_{best} = argmax_{c \in C}\; \left(log P\left(C=c\right) +
+log P\left(F_1 |C = c\right) +
+log P\left(F_2 |C = c\right) +
+\text{...} + 
+log P\left(F_n |C = c\right)\right)
+$$
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
